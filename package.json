@@ -1,0 +1,27 @@
+{
+  "name": "apiduty_backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Nitin",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@temporalio/activity": "^1.13.1",
+    "@temporalio/client": "^1.13.1",
+    "@temporalio/worker": "^1.13.1",
+    "@temporalio/workflow": "^1.13.1",
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.8.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.3",
+    "multer": "^2.0.2",
+    "zod": "^4.1.11"
+  }
+}
