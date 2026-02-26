@@ -1,6 +1,23 @@
 version: '3.8'
 
 services:
+  backend:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+      - temporal
+  
+  mongo:
+    image: mongo:6
+    ports:
+      - "27071:27017"
+    volumes:
+      - mongo_data:/data/db
+  
   postgresql:
     image: postgres:15
     environment:
@@ -17,12 +34,11 @@ services:
     depends_on:
       - postgresql
     environment:
-      - DB=postgresql
+      - DB=postgres12
       - DB_PORT=5432
       - POSTGRES_USER=temporal
       - POSTGRES_PWD=temporal
       - POSTGRES_SEEDS=postgresql
-      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development.yaml
     ports:
       - "7233:7233"
     volumes:
@@ -45,8 +61,9 @@ services:
       - TEMPORAL_GRPC_ENDPOINT=temporal:7233
       - TEMPORAL_PERMIT_WRITE_API=true
     ports:
-      - "8080:8080"
+      - "8080:8088"
 
 volumes:
   temporal_pgdata:
   temporal_config:
+  mongo_data:

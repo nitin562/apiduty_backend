@@ -17,6 +17,7 @@ router.use("/services", service)
 router.use((err, req, res, next) => {
     if(!err){
         next()
+        return
     }
 
     console.error(err.stack)

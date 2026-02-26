@@ -1,7 +1,13 @@
-import fs from "fs/promises"
+import fs from "fs/promises";
 
 import { JwtToken } from "./security/token.js";
-import { BadRequestMessage, InvalidTokenMessage, TokenExpiredMessage, TokenRequiredMessage, UserDeactivatedMessage } from "./message.js"
+import {
+  BadRequestMessage,
+  InvalidTokenMessage,
+  TokenExpiredMessage,
+  TokenRequiredMessage,
+  UserDeactivatedMessage,
+} from "./message.js";
 import { User } from "./api/user/models.js";
 
 export class BaseController {
@@ -9,7 +15,7 @@ export class BaseController {
   parser = null;
   serializer = null;
   jwt = true;
-  imgCleanup = false
+  imgCleanup = false;
 
   constructor(req, res, next) {
     this.req = req;
@@ -30,8 +36,8 @@ export class BaseController {
       this.sendResponse(401, null, { messageClass: InvalidTokenMessage });
       return false;
     }
-    
-    let tokenPayload = null
+
+    let tokenPayload = null;
     try {
       tokenPayload = JwtToken.verifyAccessToken(token);
     } catch (err) {
@@ -44,13 +50,13 @@ export class BaseController {
       return false;
     }
 
-    const user = await User.findOne({clientId: tokenPayload.userId})
-    if(!user){
+    const user = await User.findOne({ clientId: tokenPayload.userId });
+    if (!user) {
       this.sendResponse(401, null, { messageClass: UserDeactivatedMessage });
-      return false
+      return false;
     }
 
-    this.req.user = user
+    this.req.user = user;
     return true;
   }
 
@@ -86,7 +92,7 @@ export class BaseController {
     const responseJson = {
       statusCode: status,
       data: serializedData,
-      message: message ? message: (status == 200 ? "Success" : "Failed"),
+      message: message ? message : status == 200 ? "Success" : "Failed",
       code: status == 200 ? "success" : "failed",
     };
 
@@ -99,27 +105,32 @@ export class BaseController {
     return;
   }
 
-  async imageCleanUp(file){
-    try{
-        await fs.unlink(file.path)
-    }catch(err){
-        console.log("[FS ERROR] - Error in Deleting File: ", err)
+  async imageCleanUpHelper(file) {
+    try {
+      await fs.unlink(file.path);
+    } catch (err) {
+      console.log("[FS ERROR] - Error in Deleting File: ", err);
     }
-    }
+  }
 
   async handleRequest() {
     // custom implemnent
   }
 
   static async controller(req, res, next) {
-    const instance = new this(req, res, next);
-    if (!instance.jwt || await instance.verifyToken()) {
-      const _ = await instance.handleRequest();
-    }
 
-    if(instance.imageCleanUp && req?.file){
-      await instance.imageCleanUp(req.file)
+    try {
+      const instance = new this(req, res, next);
+      if (!instance.jwt || (await instance.verifyToken())) {
+        const _ = await instance.handleRequest();
+      }
+
+      if (instance.imgCleanup && req?.file) {
+        await instance.imageCleanUpHelper(req.file);
+      }
+      return;
+    } catch (err) {
+      return next(err);
     }
-    return;
   }
 }

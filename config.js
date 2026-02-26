@@ -22,7 +22,7 @@ export class DbConfig extends ServerConfig{
         if(this.isProd){
             return `mongodb+srv://${this.username}:${this.password}@${this.host}/${this.dbName}?retryWrites=true&w=majority`;
         }
-        return `mongodb://localhost:27017/${this.dbName}`
+        return `mongodb://mongo:27017/${this.dbName}`
     }
 }
 

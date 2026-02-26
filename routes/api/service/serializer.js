@@ -23,5 +23,9 @@ export const serviceSerializer = z.object({
     serviceStatus: z.any(),
     serviceToken: z.string(),
     serviceKey: z.string(),
-    serviceLogo: z.string()
+    serviceLogo: z.string().default("")
 });
+
+export const listServicesSerializer = z.object({
+    services: z.array(serviceSerializer)
+})

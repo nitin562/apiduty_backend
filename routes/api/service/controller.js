@@ -5,7 +5,7 @@ import { imgToCloud } from "../../fileHandling/cloudinary.js"
 import { BadRequestMessage, ServerErrorMessage } from "../../message.js"
 import { Service } from "./models.js"
 import { createServiceParser, serviceUpdateParser, uploadServiceLogoParser } from "./parser.js"
-import { createServiceSerializer, serviceSerializer, uploadServiceLogoSerializer } from "./serializer.js"
+import { createServiceSerializer, listServicesSerializer, serviceSerializer, uploadServiceLogoSerializer } from "./serializer.js"
 
 
 export class ServiceCreationController extends BaseController{
@@ -147,5 +147,18 @@ export class ServiceUpdateController extends BaseController{
         }
         
         this.sendResponse(200, service, {"message": "Success"})   
+    }
+}
+
+
+export class ListServicesController extends BaseController{
+    jwt = true
+    serializer = listServicesSerializer
+    method = "POST"
+
+    async handleRequest(){
+        const {user} = this.req
+        const services = await Service.find({userId: user.clientId})    
+        this.sendResponse(200, {services}, {"message": "Success"})   
     }
 }

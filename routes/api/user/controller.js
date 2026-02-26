@@ -132,7 +132,7 @@ export class RefreshTokenController extends BaseController{
         let user = null
         try{
             const payload = JwtToken.verifyRefreshToken(token)
-            user = User.findOne({clientId: payload.userId})
+            user = await User.findOne({clientId: payload.userId})
             if(!user){
                 throw new Error()
             }

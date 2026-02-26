@@ -16,7 +16,9 @@ export function Uploader({ maxSizeMB = 1, fieldName = "file" }) {
     upload(req, res, (err) => {
         if(!err){
             next()
+            return
         }
+
         const responseJson = {
             statusCode: 400,
             data: {},
@@ -27,6 +29,8 @@ export function Uploader({ maxSizeMB = 1, fieldName = "file" }) {
         if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
             return res.status(400).json(responseJson);
         }
+
+        return next(err)
     });
   };
 }
